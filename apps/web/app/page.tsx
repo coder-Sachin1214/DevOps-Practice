@@ -1,6 +1,7 @@
 import Image, { type ImageProps } from "next/image";
 import { Button } from "@repo/ui/button";
 import styles from "./page.module.css";
+import { prisma } from "@repo/db/client";
 
 type Props = Omit<ImageProps, "src"> & {
   srcLight: string;
@@ -18,7 +19,10 @@ const ThemeImage = (props: Props) => {
   );
 };
 
-export default function Home() {
+export default async function Home() {
+  const users = await prisma.user.findFirst();
+  // console.log(process.env.DATABASE_URL);
+  console.log("users : ", users);
   return (
     <div className={styles.page}>
       <main className={styles.main}>
@@ -33,9 +37,11 @@ export default function Home() {
         />
         <ol>
           <li>
-            Get started by editing <code>apps/web/app/page.tsx</code>
+            {/* Get started by editing <code>apps/web/app/page.tsx</code> */}
+            {users?.username}
           </li>
-          <li>Save and see your changes instantly.</li>
+          {/* <li>Save and see your changes instantly.</li> */}
+          <li>{users?.password}</li>
         </ol>
 
         <div className={styles.ctas}>
