@@ -24,7 +24,7 @@ jobs:
             echo "🚀 Connected to VM"
 
             echo "📁 Moving to project directory..."
-            cd /DevOps-Practice || { echo "❌ Failed to cd"; exit 1; }
+            cd DevOps-Practice || { echo "❌ Failed to cd"; exit 1; }
 
             echo "📥 Pulling latest code..."
             git pull || { echo "❌ Git pull failed"; exit 1; }
