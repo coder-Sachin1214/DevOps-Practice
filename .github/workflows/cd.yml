@@ -1,0 +1,30 @@
+name: Deploy
+
+on: 
+  push:
+    branches:
+      - "main"
+
+jobs:
+  redeploy:
+    name: Deploying Everything
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        run: |
+          ssh -o StrictHostKeyChecking=no -i "${{ secrets.SERVER_SSH_KEY }}" ubuntu@${{ secrets.SERVER_IP }} << 'EOF'
+            cd /DevOps-Practice
+            
+            git pull origin main
+            
+            pnpm install
+            pnpm run build
+            
+            pm2 restart http || pm2 start http
+            pm2 restart ws || pm2 start ws
+            pm2 restart nextjs-app || pm2 start nextjs-app
+            
+            pm2 save
+          EOF
+            
