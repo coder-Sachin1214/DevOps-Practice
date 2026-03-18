@@ -19,6 +19,8 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ secrets.SERVER_IP }} << 'EOF'
             cd /DevOps-Practice && git pull
 
+            nvm use v22.22.1
+
             pnpm install
             pnpm run build
             
