@@ -7,41 +7,24 @@ on:
 
 jobs:
   redeploy:
-    name: Deploy to VM
+    name: Deploying Everything
     runs-on: ubuntu-latest
 
     steps:
-      - name: Setup SSH key
-        run: |
-          printf "%s" "${{ secrets.AWS_FREE }}" > key.pem
-          chmod 600 key.pem
-
       - name: Deploy via SSH
         run: |
+          echo "${{ secrets.AWS_FREE }}" > key.pem
+          chmod 600 key.pem
+          
           ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@${{ secrets.SERVER_IP }} << 'EOF'
-            set -e
+            cd /DevOps-Practice && git pull
 
-            echo "🚀 Starting deployment..."
-
-            cd /DevOps-Practice
-
-            echo "📥 Fetching latest code..."
-            git fetch origin
-            git reset --hard origin/main
-
-            echo "📦 Installing dependencies..."
             pnpm install
-
-            echo "🏗️ Building project..."
             pnpm run build
-
-            echo "♻️ Restarting services..."
+            
             pm2 restart http || pm2 start http
             pm2 restart ws || pm2 start ws
             pm2 restart nextjs-app || pm2 start nextjs-app
-
-            echo "💾 Saving PM2 state..."
+            
             pm2 save
-
-            echo "✅ Deployment successful!"
           EOF
