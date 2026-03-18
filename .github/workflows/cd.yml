@@ -14,7 +14,7 @@ jobs:
       - name: Deploy via SSH
         run: |
           echo "🔐 Creating SSH key..."
-          printf "%s" "${{ secrets.AWS_FREE }}" > key.pem
+          echo "${{ secrets.AWS_FREE }}" > key.pem
           chmod 600 key.pem
           ls -l key.pem
 
@@ -24,11 +24,10 @@ jobs:
             echo "🚀 Connected to VM"
 
             echo "📁 Moving to project directory..."
-            cd /home/ubuntu/DevOps-Practice || { echo "❌ Failed to cd"; exit 1; }
+            cd DevOps-Practice || { echo "❌ Failed to cd"; exit 1; }
 
-            echo "📥 Syncing latest code..."
-            git fetch origin
-            git reset --hard origin/main || { echo "❌ Git sync failed"; exit 1; }
+            echo "📥 Pulling latest code..."
+            git pull || { echo "❌ Git pull failed"; exit 1; }
 
             echo "🟢 Loading Node version..."
             export NVM_DIR="$HOME/.nvm"
@@ -42,7 +41,9 @@ jobs:
             pnpm run build || { echo "❌ Build failed"; exit 1; }
 
             echo "♻️ Restarting PM2 services..."
-            pm2 reload all || { echo "❌ PM2 reload failed"; exit 1; }
+            pm2 restart http || pm2 start http
+            pm2 restart ws || pm2 start ws
+            pm2 restart nextjs-app || pm2 start nextjs-app
 
             echo "💾 Saving PM2 state..."
             pm2 save
