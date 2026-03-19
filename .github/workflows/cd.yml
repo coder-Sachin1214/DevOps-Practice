@@ -41,9 +41,9 @@ jobs:
             pnpm run build || { echo "❌ Build failed"; exit 1; }
 
             echo "♻️ Restarting PM2 services..."
-            pm2 restart http || pm2 start http
-            pm2 restart ws || pm2 start ws
-            pm2 restart nextjs-app || pm2 start nextjs-app
+            pm2 restart http || pm2 start /home/ubuntu/DevOps-Practice/apps/http-server/dist/index.js --name "http"
+            pm2 restart ws || pm2 start /home/ubuntu/DevOps-Practice/apps/ws-server/dist/index.js --name "ws"
+            pm2 restart nextjs-app || cd /home/ubuntu/DevOps-Practice/apps/web && pm2 start npm --name "nextjs-app" -- start
 
             echo "💾 Saving PM2 state..."
             pm2 save
